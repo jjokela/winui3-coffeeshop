@@ -1,21 +1,28 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using WiredBrainCoffee.CustomersApp.Command;
 using WiredBrainCoffee.CustomersApp.Data;
 using WiredBrainCoffee.CustomersApp.Model;
 
 namespace WiredBrainCoffee.CustomersApp.ViewModel
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
+        public MainViewModel(ICustomerDataProvider customerDataProvider)
+        {
+            _customerDataProvider = customerDataProvider;
+            DeleteCommand = new DelegateCommand(Add);
+            DeleteCommand = new DelegateCommand(Delete, CanDelete);
+        }
+
         private readonly ICustomerDataProvider _customerDataProvider;
 
-        public ObservableCollection<Customer> Customers { get; } = new();
+        public ObservableCollection<CustomerItemViewModel> Customers { get; } = new();
 
-        private Customer? _selectedCustomer;
-        public Customer? SelectedCustomer
+        private CustomerItemViewModel? _selectedCustomer;
+        public CustomerItemViewModel? SelectedCustomer
         {
             get => _selectedCustomer;
             set
@@ -24,16 +31,27 @@ namespace WiredBrainCoffee.CustomersApp.ViewModel
                 {
                     _selectedCustomer = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(IsCustomerSelected));
+                    DeleteCommand.RaiseCanExecuteChanged();
                 }
-
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public DelegateCommand AddCommand { get; }
 
-        public MainViewModel(ICustomerDataProvider customerDataProvider)
+        public DelegateCommand DeleteCommand { get; }
+
+        public bool IsCustomerSelected => SelectedCustomer is not null;
+
+        private bool CanDelete(object? parameter) => SelectedCustomer is not null;
+
+        private void Delete(object? parameter)
         {
-            _customerDataProvider = customerDataProvider;
+            if(SelectedCustomer is not null)
+            {
+                Customers.Remove(SelectedCustomer);
+                SelectedCustomer = null;
+            }
         }
 
         public async Task LoadAsync()
@@ -48,14 +66,18 @@ namespace WiredBrainCoffee.CustomersApp.ViewModel
             {
                 foreach (var customer in customers)
                 {
-                    Customers.Add(customer);
+                    Customers.Add(new CustomerItemViewModel(customer));
                 }
             }
         }
 
-        private void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+        private void Add(object? parameter) 
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            var customer = new Customer { FirstName = "New", LastName = "Customer", IsDeveloper = false };
+            var customerViewModel = new CustomerItemViewModel(customer);
+            Customers.Add(customerViewModel);
+
+            SelectedCustomer = customerViewModel;
+        }            
     }
 }

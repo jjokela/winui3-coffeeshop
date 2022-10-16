@@ -34,13 +34,13 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal">
-                <Button Margin="10">
+                <Button Margin="10" Command="{x:Bind ViewModel.AddCommand}">
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="AddFriend" />
                         <TextBlock Text="Add" Margin="5 0 0 0"/>
                     </StackPanel>
                 </Button>
-                <Button Margin="0 10 10 10">
+                <Button Margin="0 10 10 10" Command="{x:Bind ViewModel.DeleteCommand}">
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="Delete" />
                         <TextBlock Text="Delete" Margin="5 0 0 0"/>
@@ -55,17 +55,16 @@
                       Grid.Row="1" 
                       ScrollViewer.HorizontalScrollMode="Enabled"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                      ItemsSource="{Binding Customers, Mode=OneWay}"
-                      SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
+                      ItemsSource="{x:Bind ViewModel.Customers, Mode=OneWay}"
+                      SelectedItem="{x:Bind ViewModel.SelectedCustomer, Mode=TwoWay}"
                       DisplayMemberPath="FirstName"/>
-                      <!-- binding is not explicitly specified, so it takes it from the root -->
         </Grid>
 
         <!-- Customer Detail -->
-        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10">
-            <TextBox Header="First name" Text="{Binding SelectedCustomer.FirstName, Mode=TwoWay}"/>
-            <TextBox Header="Last name" Margin="0 10 0 0" />
-            <CheckBox Margin="0 20 0 0">
+        <StackPanel Visibility="{x:Bind ViewModel.IsCustomerSelected, Mode=OneWay}" Grid.Row="1" Grid.Column="1" Margin="10">
+            <TextBox Header="First name" Text="{x:Bind ViewModel.SelectedCustomer.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Header="Last name" Text="{x:Bind ViewModel.SelectedCustomer.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 10 0 0" />
+            <CheckBox IsChecked="{x:Bind ViewModel.SelectedCustomer.IsDeveloper, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 20 0 0">
                 Is developer
             </CheckBox>
         </StackPanel>

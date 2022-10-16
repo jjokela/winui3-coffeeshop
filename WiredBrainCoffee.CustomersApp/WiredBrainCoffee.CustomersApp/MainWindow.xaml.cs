@@ -14,7 +14,6 @@ namespace WiredBrainCoffee.CustomersApp
             this.InitializeComponent();
             Title = "Customers App";
             ViewModel = new MainViewModel(new CustomerDataProvider());
-            root.DataContext = ViewModel;
             root.Loaded += Root_Loaded;
         }
 
