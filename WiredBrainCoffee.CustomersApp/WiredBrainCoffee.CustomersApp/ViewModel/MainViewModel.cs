@@ -13,7 +13,7 @@ namespace WiredBrainCoffee.CustomersApp.ViewModel
         public MainViewModel(ICustomerDataProvider customerDataProvider)
         {
             _customerDataProvider = customerDataProvider;
-            DeleteCommand = new DelegateCommand(Add);
+            AddCommand = new DelegateCommand(Add);
             DeleteCommand = new DelegateCommand(Delete, CanDelete);
         }
 

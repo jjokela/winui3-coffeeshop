@@ -9,11 +9,11 @@ namespace WiredBrainCoffee.CustomersApp
     {
         public MainViewModel ViewModel { get; }
         
-        public MainWindow()
+        public MainWindow(MainViewModel viewModel)
         {
             this.InitializeComponent();
             Title = "Customers App";
-            ViewModel = new MainViewModel(new CustomerDataProvider());
+            ViewModel = viewModel;
             root.Loaded += Root_Loaded;
         }
 
@@ -33,6 +33,13 @@ namespace WiredBrainCoffee.CustomersApp
             Grid.SetColumn(customerListGrid, newColumn);
 
             symbolIconMoveNavigation.Symbol = newColumn == 0 ? Symbol.Forward : Symbol.Back;
+        }
+
+        private void ButtonToggleTheme_Click(object sender, RoutedEventArgs e)
+        {
+            root.RequestedTheme = root.RequestedTheme == ElementTheme.Light
+                ? ElementTheme.Dark
+                : ElementTheme.Light;
         }
     }
 }

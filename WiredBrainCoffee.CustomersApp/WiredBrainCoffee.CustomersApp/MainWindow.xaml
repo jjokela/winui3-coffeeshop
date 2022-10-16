@@ -5,10 +5,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:controls="using:WiredBrainCoffee.CustomersApp.Controls"
+    xmlns:viewModel="using:WiredBrainCoffee.CustomersApp.ViewModel"
     mc:Ignorable="d">
 
-    <Grid x:Name="root" Background="#222222">
-
+    <Grid x:Name="root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.Resources>
+            <DataTemplate x:Key="CustomerDataTemplate" 
+                          x:DataType="viewModel:CustomerItemViewModel">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Bind FirstName, Mode=OneWay}" FontWeight="Bold" />
+                    <TextBlock Text="{Binding LastName, Mode=OneWay}" Margin="5 0 0 0" />
+                    <TextBlock Text="(Dev)" Visibility="{x:Bind IsDeveloper, Mode=OneWay}" Margin="5 0 0 0"/>
+                </StackPanel>
+            </DataTemplate>
+        </Grid.Resources>
+        
         <!-- width/height is by default '*' -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -24,9 +35,10 @@
 
         <!-- Header -->
         <controls:HeaderControl Grid.ColumnSpan="3"/>
+        <Button Grid.ColumnSpan="3" HorizontalAlignment="Right" VerticalAlignment="Top" Content="Toggle Theme" Margin="10" Click="ButtonToggleTheme_Click"/>
 
         <!-- Customer List -->
-        <Grid x:Name="customerListGrid" Grid.Row="1" Grid.Column="0" Background="#333333" Width="250">
+        <Grid x:Name="customerListGrid" Grid.Row="1" Grid.Column="0" Background="{ThemeResource NavigationBackgroundBrush}" Width="250">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -57,13 +69,18 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Auto"
                       ItemsSource="{x:Bind ViewModel.Customers, Mode=OneWay}"
                       SelectedItem="{x:Bind ViewModel.SelectedCustomer, Mode=TwoWay}"
-                      DisplayMemberPath="FirstName"/>
+                      ItemTemplate="{StaticResource CustomerDataTemplate}"/>
         </Grid>
 
         <!-- Customer Detail -->
         <StackPanel Visibility="{x:Bind ViewModel.IsCustomerSelected, Mode=OneWay}" Grid.Row="1" Grid.Column="1" Margin="10">
-            <TextBox Header="First name" Text="{x:Bind ViewModel.SelectedCustomer.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBox Header="Last name" Text="{x:Bind ViewModel.SelectedCustomer.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 10 0 0" />
+            <TextBox Header="First name" 
+                     Text="{x:Bind ViewModel.SelectedCustomer.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="First name"/>
+            <TextBox Header="Last name" 
+                     Text="{x:Bind ViewModel.SelectedCustomer.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="0 10 0 0" 
+                     PlaceholderText="Last name"/>
             <CheckBox IsChecked="{x:Bind ViewModel.SelectedCustomer.IsDeveloper, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0 20 0 0">
                 Is developer
             </CheckBox>
